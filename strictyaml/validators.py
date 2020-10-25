@@ -10,6 +10,13 @@ if sys.version_info[0] == 3:
 
 
 class Validator(object):
+    def __init__(self, doc=None):
+        super().__init__()
+        if doc:
+            self.doc = doc
+        else:
+            self.doc = {}
+        
     def __or__(self, other):
         return OrValidator(self, other)
 
@@ -48,7 +55,8 @@ class SeqValidator(Validator):
 
 
 class OrValidator(Validator):
-    def __init__(self, validator_a, validator_b):
+    def __init__(self, validator_a, validator_b, doc=None):
+        super().__init__(doc=doc)
         assert isinstance(validator_a, Validator), "validator_a must be a Validator"
         assert isinstance(validator_b, Validator), "validator_b must be a Validator"
 

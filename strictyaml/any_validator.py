@@ -49,6 +49,8 @@ class Any(Validator):
     """
     Validates any YAML and returns simple dicts/lists of strings.
     """
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
 
     def validate(self, chunk):
         return schema_from_document(chunk.contents)(chunk)

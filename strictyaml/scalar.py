@@ -40,7 +40,8 @@ class ScalarValidator(Validator):
 
 
 class Enum(ScalarValidator):
-    def __init__(self, restricted_to, item_validator=None):
+    def __init__(self, restricted_to, item_validator=None, doc=None):
+        super().__init__(doc=doc)
         self._item_validator = Str() if item_validator is None else item_validator
         assert isinstance(
             self._item_validator, ScalarValidator
@@ -74,7 +75,8 @@ class Enum(ScalarValidator):
 
 
 class CommaSeparated(ScalarValidator):
-    def __init__(self, item_validator):
+    def __init__(self, item_validator, doc=None):
+        super().__init__(doc=doc)
         self._item_validator = item_validator
         assert isinstance(
             self._item_validator, ScalarValidator
@@ -109,10 +111,11 @@ class CommaSeparated(ScalarValidator):
 
 
 class Regex(ScalarValidator):
-    def __init__(self, regular_expression):
+    def __init__(self, regular_expression, doc=None):
         """
         Give regular expression, e.g. u'[0-9]'
         """
+        super().__init__(doc=doc)
         self._regex = regular_expression
         self._matching_message = "when expecting string matching {0}".format(
             self._regex
@@ -135,18 +138,24 @@ class Regex(ScalarValidator):
 
 
 class Email(Regex):
-    def __init__(self):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
+        
         self._regex = constants.REGEXES["email"]
         self._matching_message = "when expecting an email address"
 
 
 class Url(Regex):
-    def __init__(self):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
         self._regex = constants.REGEXES["url"]
         self._matching_message = "when expecting a url"
 
 
 class Str(ScalarValidator):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
+        
     def validate_scalar(self, chunk):
         return chunk.contents
 
@@ -159,6 +168,9 @@ class Str(ScalarValidator):
 
 
 class Int(ScalarValidator):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
+        
     def validate_scalar(self, chunk):
         val = chunk.contents
         if not utils.is_integer(val):
@@ -174,6 +186,9 @@ class Int(ScalarValidator):
 
 
 class Bool(ScalarValidator):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
+        
     def validate_scalar(self, chunk):
         val = chunk.contents
         if unicode(val).lower() not in constants.BOOL_VALUES:
@@ -199,6 +214,9 @@ class Bool(ScalarValidator):
 
 
 class Float(ScalarValidator):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
+        
     def validate_scalar(self, chunk):
         val = chunk.contents
         if utils.is_infinity(val) or utils.is_not_a_number(val):
@@ -222,6 +240,9 @@ class Float(ScalarValidator):
 
 
 class Decimal(ScalarValidator):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
+        
     def validate_scalar(self, chunk):
         val = chunk.contents
         if not utils.is_decimal(val):
@@ -231,6 +252,9 @@ class Decimal(ScalarValidator):
 
 
 class Datetime(ScalarValidator):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
+        
     def validate_scalar(self, chunk):
         try:
             return dateutil.parser.parse(chunk.contents)
@@ -256,6 +280,9 @@ class Datetime(ScalarValidator):
 
 
 class EmptyNone(ScalarValidator):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
+        
     def validate_scalar(self, chunk):
         val = chunk.contents
         if val != "":
@@ -273,6 +300,9 @@ class EmptyNone(ScalarValidator):
 
 
 class EmptyDict(EmptyNone):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
+        
     def empty(self, chunk):
         return {}
 
@@ -283,6 +313,9 @@ class EmptyDict(EmptyNone):
 
 
 class EmptyList(EmptyNone):
+    def __init__(self, doc=None):
+        super().__init__(doc=doc)
+        
     def empty(self, chunk):
         return []
 

@@ -12,9 +12,11 @@ if sys.version_info[0] == 3:
 
 
 class Optional(object):
-    def __init__(self, key, default=None):
+    def __init__(self, key, default=None, doc=None):
+        # super().__init__(doc=doc)
         self.key = key
         self.default = default
+        self.doc = key
 
     def __repr__(self):
         # TODO: Add default
@@ -23,8 +25,9 @@ class Optional(object):
 
 class MapPattern(MapValidator):
     def __init__(
-        self, key_validator, value_validator, minimum_keys=None, maximum_keys=None
+        self, key_validator, value_validator, minimum_keys=None, maximum_keys=None, doc=None
     ):
+        super().__init__(doc=doc)
         self._key_validator = key_validator
         self._value_validator = value_validator
         self._maximum_keys = maximum_keys
@@ -41,6 +44,9 @@ class MapPattern(MapValidator):
         assert isinstance(
             minimum_keys, (type(None), int)
         ), "maximum_keys must be an integer"
+        
+        self.doc["key"] = key_validator.doc
+        self.doc["value"] = value_validator.doc
 
     @property
     def key_validator(self):
@@ -92,7 +98,8 @@ class MapPattern(MapValidator):
 
 
 class Map(MapValidator):
-    def __init__(self, validator, key_validator=None):
+    def __init__(self, validator, key_validator=None, doc=None):
+        super().__init__(doc=doc)
         self._validator = validator
         self._key_validator = Str() if key_validator is None else key_validator
         assert isinstance(
@@ -125,6 +132,16 @@ class Map(MapValidator):
             for key in validator.keys()
             if isinstance(key, Optional) and key.default is not None
         }
+
+        if self._key_validator.doc != {}:
+            self.doc["_key"] = self._key_validator.doc
+        d = {}
+        for k, v in validator.items():
+            if isinstance(k, Optional):
+                d[k.key] = v.doc
+            else:
+                d[k] = v.doc  
+        self.doc["keys"] = d
 
     @property
     def key_validator(self):
@@ -214,8 +231,10 @@ class Map(MapValidator):
 
 
 class Seq(SeqValidator):
-    def __init__(self, validator):
+    def __init__(self, validator, doc=None):
+        super().__init__(doc=doc)
         self._validator = validator
+        self.doc["item"] = validator.doc
 
     def __repr__(self):
         return "Seq({0})".format(repr(self._validator))
@@ -230,12 +249,15 @@ class Seq(SeqValidator):
 
 
 class FixedSeq(SeqValidator):
-    def __init__(self, validators):
+    def __init__(self, validators, doc=None):
+        super().__init__(doc=doc)
         self._validators = validators
+        self.doc["items"] = []
         for item in validators:
             assert isinstance(
                 item, Validator
             ), "all FixedSeq validators must be Validators"
+            self.doc["items"].append(item.doc)
 
     def __repr__(self):
         return "FixedSeq({0})".format(repr(self._validators))
@@ -265,11 +287,13 @@ class FixedSeq(SeqValidator):
 
 
 class UniqueSeq(SeqValidator):
-    def __init__(self, validator):
+    def __init__(self, validator, doc=None):
+        super().__init__(doc=doc)
         self._validator = validator
         assert isinstance(
             self._validator, ScalarValidator
         ), "UniqueSeq validator must be ScalarValidator"
+        self.doc["item"] = validator.doc
 
     def __repr__(self):
         return "UniqueSeq({0})".format(repr(self._validator))
