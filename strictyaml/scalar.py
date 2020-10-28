@@ -87,7 +87,6 @@ class CommaSeparated(ScalarValidator):
         if not doc:
             doc = {}
         doc["_type"] = "CommaSeparated"
-        
 
     def validate_scalar(self, chunk):
         if chunk.contents == "":
@@ -130,7 +129,6 @@ class Regex(ScalarValidator):
         if not doc:
             doc = {}
         doc["_type"] = "Regex"
-        
 
     def validate_scalar(self, chunk):
         if re.compile(self._regex).match(chunk.contents) is None:
@@ -151,13 +149,12 @@ class Regex(ScalarValidator):
 class Email(Regex):
     def __init__(self, doc=None):
         super().__init__(doc=doc)
-        
+
         self._regex = constants.REGEXES["email"]
         self._matching_message = "when expecting an email address"
         if not doc:
             doc = {}
         doc["_type"] = "Email"
-        
 
 
 class Url(Regex):
@@ -168,7 +165,6 @@ class Url(Regex):
         if not doc:
             doc = {}
         doc["_type"] = "Url"
-        
 
 
 class Str(ScalarValidator):
@@ -177,8 +173,7 @@ class Str(ScalarValidator):
         if not doc:
             doc = {}
         doc["_type"] = "String"
-        
-        
+
     def validate_scalar(self, chunk):
         return chunk.contents
 
@@ -196,8 +191,7 @@ class Int(ScalarValidator):
         if not doc:
             doc = {}
         doc["_type"] = "Integer"
-        
-        
+
     def validate_scalar(self, chunk):
         val = chunk.contents
         if not utils.is_integer(val):
@@ -218,8 +212,7 @@ class Bool(ScalarValidator):
         if not doc:
             doc = {}
         doc["_type"] = "Boolean"
-        
-        
+
     def validate_scalar(self, chunk):
         val = chunk.contents
         if unicode(val).lower() not in constants.BOOL_VALUES:
@@ -250,12 +243,11 @@ class Float(ScalarValidator):
         if not doc:
             doc = {}
         doc["_type"] = "Float"
-        
-        
+
     def validate_scalar(self, chunk):
         val = chunk.contents
         if utils.is_infinity(val) or utils.is_not_a_number(val):
-            val = val.replace('.', '')
+            val = val.replace(".", "")
         elif not utils.is_decimal(val):
             chunk.expecting_but_found("when expecting a float")
         return float(val)
@@ -263,11 +255,11 @@ class Float(ScalarValidator):
     def to_yaml(self, data):
         if utils.has_number_type(data):
             if math.isnan(data):
-                return 'nan'
-            if data == float('inf'):
-                return 'inf'
-            if data == float('-inf'):
-                return '-inf'
+                return "nan"
+            if data == float("inf"):
+                return "inf"
+            if data == float("-inf"):
+                return "-inf"
             return str(data)
         if utils.is_string(data) and utils.is_decimal(data):
             return data
@@ -280,8 +272,7 @@ class Decimal(ScalarValidator):
         if not doc:
             doc = {}
         doc["_type"] = "Decimal"
-        
-        
+
     def validate_scalar(self, chunk):
         val = chunk.contents
         if not utils.is_decimal(val):
@@ -296,8 +287,7 @@ class Datetime(ScalarValidator):
         if not doc:
             doc = {}
         doc["_type"] = "DateTime"
-        
-        
+
     def validate_scalar(self, chunk):
         try:
             return dateutil.parser.parse(chunk.contents)
@@ -328,8 +318,7 @@ class EmptyNone(ScalarValidator):
         if not doc:
             doc = {}
         doc["_type"] = "Empty"
-        
-        
+
     def validate_scalar(self, chunk):
         val = chunk.contents
         if val != "":
@@ -349,7 +338,7 @@ class EmptyNone(ScalarValidator):
 class EmptyDict(EmptyNone):
     def __init__(self, doc=None):
         super().__init__(doc=doc)
-        
+
     def empty(self, chunk):
         return {}
 
@@ -362,7 +351,7 @@ class EmptyDict(EmptyNone):
 class EmptyList(EmptyNone):
     def __init__(self, doc=None):
         super().__init__(doc=doc)
-        
+
     def empty(self, chunk):
         return []
 
