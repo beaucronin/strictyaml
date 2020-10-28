@@ -16,7 +16,7 @@ class Optional(object):
         # super().__init__(doc=doc)
         self.key = key
         self.default = default
-        self.doc = key
+        self.doc = {"text": f"Optional {key}", "_type": "Optional"}
 
     def __repr__(self):
         # TODO: Add default
@@ -47,6 +47,7 @@ class MapPattern(MapValidator):
         
         self.doc["key"] = key_validator.doc
         self.doc["value"] = value_validator.doc
+        self.doc["_type"] = "Map"
 
     @property
     def key_validator(self):
@@ -117,6 +118,7 @@ class Map(MapValidator):
 
         for key_val, value_val in validator.items():
             if isinstance(key_val, Optional):
+                value_val.doc["Optional"] = True
                 if key_val.default is not None:
                     try:
                         value_val.to_yaml(key_val.default)
@@ -142,6 +144,7 @@ class Map(MapValidator):
             else:
                 d[k] = v.doc  
         self.doc["keys"] = d
+        self.doc["_type"] = "Object"
 
     @property
     def key_validator(self):
@@ -235,6 +238,7 @@ class Seq(SeqValidator):
         super().__init__(doc=doc)
         self._validator = validator
         self.doc["item"] = validator.doc
+        self.doc["_type"] = "List"
 
     def __repr__(self):
         return "Seq({0})".format(repr(self._validator))
@@ -258,6 +262,7 @@ class FixedSeq(SeqValidator):
                 item, Validator
             ), "all FixedSeq validators must be Validators"
             self.doc["items"].append(item.doc)
+        self.doc["_type"] = "FixedList"
 
     def __repr__(self):
         return "FixedSeq({0})".format(repr(self._validators))
@@ -294,6 +299,7 @@ class UniqueSeq(SeqValidator):
             self._validator, ScalarValidator
         ), "UniqueSeq validator must be ScalarValidator"
         self.doc["item"] = validator.doc
+        self.doc["_type"] = "UniqueList"
 
     def __repr__(self):
         return "UniqueSeq({0})".format(repr(self._validator))

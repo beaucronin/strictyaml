@@ -51,6 +51,7 @@ class Any(Validator):
     """
     def __init__(self, doc=None):
         super().__init__(doc=doc)
+        self.doc["_type"] = "Any"
 
     def validate(self, chunk):
         return schema_from_document(chunk.contents)(chunk)

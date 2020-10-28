@@ -103,6 +103,10 @@ class OrValidator(Validator):
                     "Try using revalidation instead."
                 ).format(seq_validator_count)
             )
+        
+        self.doc["_type"] = "Or"
+        self.doc["a"] = validator_a.doc
+        self.doc["b"] = validator_b.doc
 
     def to_yaml(self, value):
         try:

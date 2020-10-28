@@ -47,6 +47,9 @@ class Enum(ScalarValidator):
             self._item_validator, ScalarValidator
         ), "item validator must be scalar too"
         self._restricted_to = restricted_to
+        if not doc:
+            doc = {}
+        doc["_type"] = "Enum"
 
     def validate_scalar(self, chunk):
         val = self._item_validator(chunk)
@@ -81,6 +84,10 @@ class CommaSeparated(ScalarValidator):
         assert isinstance(
             self._item_validator, ScalarValidator
         ), "item validator must be scalar too"
+        if not doc:
+            doc = {}
+        doc["_type"] = "CommaSeparated"
+        
 
     def validate_scalar(self, chunk):
         if chunk.contents == "":
@@ -120,6 +127,10 @@ class Regex(ScalarValidator):
         self._matching_message = "when expecting string matching {0}".format(
             self._regex
         )
+        if not doc:
+            doc = {}
+        doc["_type"] = "Regex"
+        
 
     def validate_scalar(self, chunk):
         if re.compile(self._regex).match(chunk.contents) is None:
@@ -143,6 +154,10 @@ class Email(Regex):
         
         self._regex = constants.REGEXES["email"]
         self._matching_message = "when expecting an email address"
+        if not doc:
+            doc = {}
+        doc["_type"] = "Email"
+        
 
 
 class Url(Regex):
@@ -150,11 +165,19 @@ class Url(Regex):
         super().__init__(doc=doc)
         self._regex = constants.REGEXES["url"]
         self._matching_message = "when expecting a url"
+        if not doc:
+            doc = {}
+        doc["_type"] = "Url"
+        
 
 
 class Str(ScalarValidator):
     def __init__(self, doc=None):
         super().__init__(doc=doc)
+        if not doc:
+            doc = {}
+        doc["_type"] = "String"
+        
         
     def validate_scalar(self, chunk):
         return chunk.contents
@@ -170,6 +193,10 @@ class Str(ScalarValidator):
 class Int(ScalarValidator):
     def __init__(self, doc=None):
         super().__init__(doc=doc)
+        if not doc:
+            doc = {}
+        doc["_type"] = "Integer"
+        
         
     def validate_scalar(self, chunk):
         val = chunk.contents
@@ -188,6 +215,10 @@ class Int(ScalarValidator):
 class Bool(ScalarValidator):
     def __init__(self, doc=None):
         super().__init__(doc=doc)
+        if not doc:
+            doc = {}
+        doc["_type"] = "Boolean"
+        
         
     def validate_scalar(self, chunk):
         val = chunk.contents
@@ -216,6 +247,10 @@ class Bool(ScalarValidator):
 class Float(ScalarValidator):
     def __init__(self, doc=None):
         super().__init__(doc=doc)
+        if not doc:
+            doc = {}
+        doc["_type"] = "Float"
+        
         
     def validate_scalar(self, chunk):
         val = chunk.contents
@@ -242,6 +277,10 @@ class Float(ScalarValidator):
 class Decimal(ScalarValidator):
     def __init__(self, doc=None):
         super().__init__(doc=doc)
+        if not doc:
+            doc = {}
+        doc["_type"] = "Decimal"
+        
         
     def validate_scalar(self, chunk):
         val = chunk.contents
@@ -254,6 +293,10 @@ class Decimal(ScalarValidator):
 class Datetime(ScalarValidator):
     def __init__(self, doc=None):
         super().__init__(doc=doc)
+        if not doc:
+            doc = {}
+        doc["_type"] = "DateTime"
+        
         
     def validate_scalar(self, chunk):
         try:
@@ -282,6 +325,10 @@ class Datetime(ScalarValidator):
 class EmptyNone(ScalarValidator):
     def __init__(self, doc=None):
         super().__init__(doc=doc)
+        if not doc:
+            doc = {}
+        doc["_type"] = "Empty"
+        
         
     def validate_scalar(self, chunk):
         val = chunk.contents
